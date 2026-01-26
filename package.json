@@ -6,7 +6,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "sync": "node src/index.js"
+    "sync": "node src/index.js",
+    "complete": "node src/complete.js"
   },
   "keywords": [
     "omnifocus",

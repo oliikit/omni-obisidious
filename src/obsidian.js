@@ -25,7 +25,10 @@ function taskToMarkdown(task, options = {}) {
   const flag = task.flagged ? ' 🚩' : '';
   const tags = task.tags.length > 0 ? ` ${task.tags.map(t => `#${t.replace(/\s+/g, '-')}`).join(' ')}` : '';
   
-  let line = `${checkbox} ${task.name}${flag}${tags}`;
+  // Task name with OmniFocus link
+  const ofLink = `[${task.name}](omnifocus:///task/${task.id})`;
+  
+  let line = `${checkbox} ${ofLink}${flag}${tags}`;
   
   // Add due date
   if (task.dueDate) {
@@ -145,13 +148,21 @@ export function generateMarkdown(tasks, options = {}) {
 }
 
 /**
+ * Get today's date formatted as YYYY-MM-DD
+ */
+export function getTodayFilename() {
+  const now = new Date();
+  return `${now.toISOString().split('T')[0]}.md`;
+}
+
+/**
  * Write markdown content to Obsidian vault
  */
 export function writeToObsidian(content, options = {}) {
   const {
     vault = config.obsidianVault,
     folder = config.tasksFolder,
-    filename = config.outputFile,
+    filename = getTodayFilename(), // Default to daily note
   } = options;
 
   // Ensure vault directory exists
