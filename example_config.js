@@ -7,14 +7,11 @@ import { join } from 'path';
 
 export const config = {
   // Path to your Obsidian vault
-  obsidianVault: join(homedir(), 'Notes', 'test-automation'),
+  obsidianVault: join(homedir(), 'PATH', 'TO', 'YOUR', 'VAULT'),
   
   // Folder within the vault to store tasks (will be created if doesn't exist)
   tasksFolder: 'OmniFocus',
-  
-  // Output file name
-  outputFile: 'Tasks.md',
-  
+   
   // Perspective to fetch tasks from (null for all tasks)
   perspective: 'Today',
   
