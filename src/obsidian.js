@@ -2,7 +2,7 @@
  * Obsidian markdown file writer
  */
 
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { config } from '../config.js';
 
@@ -151,8 +151,9 @@ export function getTodayFilename() {
 
 /**
  * Write markdown content to Obsidian vault
+ * If file exists, only appends new tasks to the Tasks callout
  */
-export function writeToObsidian(content, options = {}) {
+export function writeToObsidian(content, tasks, options = {}) {
   const {
     vault = config.obsidianVault,
     folder = config.tasksFolder,
@@ -171,8 +172,42 @@ export function writeToObsidian(content, options = {}) {
     console.log(`Created folder: ${tasksPath}`);
   }
 
-  // Write the file
   const filePath = join(tasksPath, filename);
+  
+  // If file exists, only append new tasks
+  if (existsSync(filePath)) {
+    const existingContent = readFileSync(filePath, 'utf-8');
+    
+    // Extract existing task IDs from the file
+    const existingIds = new Set();
+    const idRegex = /omnifocus:\/\/\/task\/([^\)]+)/g;
+    let match;
+    while ((match = idRegex.exec(existingContent)) !== null) {
+      existingIds.add(match[1]);
+    }
+    
+    // Find new tasks that aren't already in the file
+    const newTasks = tasks.filter(t => !existingIds.has(t.id));
+    
+    if (newTasks.length === 0) {
+      console.log('No new tasks to add.');
+      return filePath;
+    }
+    
+    // Generate markdown for new tasks only
+    const newTaskLines = newTasks.map(task => `> ${taskToMarkdown(task)}`).join('\n');
+    
+    // Find the end of the Tasks callout and insert before it
+    // Look for the line with just '>' before the '---'
+    const calloutEndRegex = /(> \[!todo\]- Tasks[\s\S]*?)(\n>\n---)/;
+    const updatedContent = existingContent.replace(calloutEndRegex, `$1\n${newTaskLines}$2`);
+    
+    writeFileSync(filePath, updatedContent, 'utf-8');
+    console.log(`Added ${newTasks.length} new task(s).`);
+    return filePath;
+  }
+
+  // Write new file
   writeFileSync(filePath, content, 'utf-8');
   
   return filePath;

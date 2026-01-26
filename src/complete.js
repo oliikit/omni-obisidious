@@ -15,15 +15,32 @@ import { getTodayFilename } from './obsidian.js';
 
 /**
  * Parse markdown file and extract completed task IDs
+ * Only reads from the "### Day's Tasks" section
  */
 function getCompletedTaskIds(markdown) {
   const completedIds = [];
+  
+  // Find the Day's Tasks section
+  const dayTasksMarker = "### Day's Tasks";
+  const markerIndex = markdown.indexOf(dayTasksMarker);
+  
+  if (markerIndex === -1) {
+    console.log('⚠️  No "### Day\'s Tasks" section found.');
+    return completedIds;
+  }
+  
+  // Get content from Day's Tasks to the next section (---)
+  const afterMarker = markdown.slice(markerIndex);
+  const nextSection = afterMarker.indexOf('\n---');
+  const dayTasksContent = nextSection !== -1 
+    ? afterMarker.slice(0, nextSection) 
+    : afterMarker;
   
   // Match: - [x] [Task name](omnifocus:///task/TASKID)
   const regex = /- \[x\] \[.*?\]\(omnifocus:\/\/\/task\/([^\)]+)\)/gi;
   
   let match;
-  while ((match = regex.exec(markdown)) !== null) {
+  while ((match = regex.exec(dayTasksContent)) !== null) {
     completedIds.push(match[1]);
   }
   

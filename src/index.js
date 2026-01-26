@@ -37,7 +37,7 @@ async function main() {
   // Write to Obsidian
   console.log('💾 Writing to Obsidian vault...');
   try {
-    const filePath = writeToObsidian(markdown);
+    const filePath = writeToObsidian(markdown, tasks);
     console.log(`✅ Written to: ${filePath}\n`);
   } catch (error) {
     console.error(`❌ Failed to write: ${error.message}`);
