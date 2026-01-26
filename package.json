@@ -1,0 +1,19 @@
+{
+  "name": "omni-obsidious",
+  "version": "1.0.0",
+  "description": "Fetch OmniFocus tasks and sync them to Obsidian notes",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "sync": "node src/index.js"
+  },
+  "keywords": [
+    "omnifocus",
+    "obsidian",
+    "productivity",
+    "tasks"
+  ],
+  "author": "",
+  "license": "MIT"
+}
