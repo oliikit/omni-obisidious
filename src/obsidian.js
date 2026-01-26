@@ -104,9 +104,16 @@ export function generateMarkdown(tasks, options = {}) {
     }
   }
   
+  // Button to add checked tasks to Day's Tasks
+  lines.push('');
+  lines.push('```button');
+  lines.push('name Add to Day Tasks');
+  lines.push('type command');
+  lines.push('action Templater: Insert _templates/Add to Day Tasks');
+  lines.push('class button-add-to-day');
+  lines.push('```');
   lines.push('');
   lines.push('---');
-  lines.push('');
   
   // Day Planning section
   lines.push('## Day Planning');
@@ -118,11 +125,12 @@ export function generateMarkdown(tasks, options = {}) {
   lines.push("### Day's Tasks");
   lines.push('');
   lines.push('');
-  lines.push('---');
   lines.push('');
+  lines.push('---');
   
   // Day Notes section
-  lines.push('## Day Notes');
+  lines.push('## Day\'s Notes');
+  lines.push('');
   lines.push('');
   lines.push('');
   lines.push('---');
@@ -133,9 +141,22 @@ export function generateMarkdown(tasks, options = {}) {
   lines.push('');
   lines.push('- **What went well today?**');
   lines.push('');
+  lines.push('');
   lines.push('- **What was draining?**');
   lines.push('');
+  lines.push('');
   lines.push("- **What's lingering that's still top of mind?**");
+  lines.push('');
+  lines.push('');
+  lines.push('');
+  
+  // Button to complete tasks in OmniFocus
+  lines.push('```button');
+  lines.push('name Complete Tasks in OmniFocus');
+  lines.push('type command');
+  lines.push('action Templater: Insert _templates/Complete Tasks');
+  lines.push('class button-complete');
+  lines.push('```');
   lines.push('');
 
   return lines.join('\n');

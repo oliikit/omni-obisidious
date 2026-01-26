@@ -1,4 +1,14 @@
 <%*
+/*
+ * Add to Day Tasks
+ * Moves checked tasks from the Tasks callout to Day's Tasks section
+ * 
+ * SETUP:
+ * 1. Copy this file to your Obsidian vault's templates folder
+ * 2. Go to Settings → Hotkeys, search for "Templater: Insert Add to Day Tasks"
+ *    and click the + icon (no need to assign a key, this enables the command palette)
+ */
+
 // Get file content
 let content = tp.file.content;
 
@@ -51,14 +61,18 @@ const lineEnd = content.indexOf('\n', markerIndex);
 const before = content.slice(0, lineEnd + 1);
 const after = content.slice(lineEnd + 1);
 
-const newContent = before + '\n' + tasksToAdd + '\n' + after;
+// Normalize: strip leading newlines from after, we'll add our own
+const afterTrimmed = after.replace(/^\n+/, '');
 
-// Uncheck the tasks in the callout
-const finalContent = newContent.replace(/^(> - )\[x\]( .+)$/gm, '$1[ ]$2');
+// If there are already tasks, join directly; otherwise add blank line before next section
+const hasExistingTasks = afterTrimmed.startsWith('- [');
+const separator = hasExistingTasks ? '\n' : '\n\n';
+
+const newContent = before + '\n' + tasksToAdd + separator + afterTrimmed;
 
 // Update the file
 const file = tp.file.find_tfile(tp.file.path(true));
-await app.vault.modify(file, finalContent);
+await app.vault.modify(file, newContent);
 
 new Notice(`Added ${checkedTasks.length} task(s) to Day's Tasks!`);
 %>

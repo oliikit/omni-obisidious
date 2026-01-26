@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node src/index.js",
     "sync": "node src/index.js",
-    "complete": "node src/complete.js"
+    "complete": "node src/complete.js",
+    "remake": "node src/remake.js",
+    "setup": "node src/setup.js"
   },
   "keywords": [
     "omnifocus",
