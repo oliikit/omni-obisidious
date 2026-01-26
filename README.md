@@ -15,7 +15,7 @@ cp example_config.js config.js
 ```bash
 npm start          # Sync tasks to today's daily note
 npm run complete   # Mark checked tasks complete in OmniFocus
-npm run remake     # Delete and recreate today's note (for testing)
+npm run remake     # Delete and recreate today's note 
 ```
 
 ## Obsidian Setup
@@ -85,4 +85,3 @@ The "Complete Tasks" button requires a system command:
 ## Recommended Plugins
 
 - **Outliner**: Move list items with `Cmd+Shift+↑/↓`
-Yes
