@@ -16,37 +16,16 @@ function formatDate(isoDate) {
 }
 
 /**
- * Convert a task to markdown format
+ * Convert a task to markdown format (simplified - no dates)
  */
-function taskToMarkdown(task, options = {}) {
-  const { includeNotes = true } = options;
-  
+function taskToMarkdown(task) {
   const checkbox = task.completed ? '- [x]' : '- [ ]';
   const flag = task.flagged ? ' 🚩' : '';
-  const tags = task.tags.length > 0 ? ` ${task.tags.map(t => `#${t.replace(/\s+/g, '-')}`).join(' ')}` : '';
   
   // Task name with OmniFocus link
   const ofLink = `[${task.name}](omnifocus:///task/${task.id})`;
   
-  let line = `${checkbox} ${ofLink}${flag}${tags}`;
-  
-  // Add due date
-  if (task.dueDate) {
-    line += ` 📅 ${formatDate(task.dueDate)}`;
-  }
-  
-  // Add defer date
-  if (task.deferDate) {
-    line += ` ⏳ ${formatDate(task.deferDate)}`;
-  }
-  
-  // Add notes as sub-bullet
-  if (includeNotes && task.note && task.note.trim()) {
-    const noteLines = task.note.trim().split('\n').map(l => `    - ${l}`).join('\n');
-    line += `\n${noteLines}`;
-  }
-  
-  return line;
+  return `${checkbox} ${ofLink}${flag}`;
 }
 
 /**
@@ -70,51 +49,45 @@ function groupTasksByProject(tasks) {
  * Generate markdown content from tasks
  */
 export function generateMarkdown(tasks, options = {}) {
-  const { 
-    groupByProject = true, 
-    includeNotes = true,
-    title = 'OmniFocus Tasks'
-  } = options;
-
   const lines = [];
-  const now = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+  const timeStr = now.toTimeString().slice(0, 5); // HH:MM
   
-  // Header
-  lines.push(`# ${title}`);
-  lines.push('');
-  lines.push(`> Last synced: ${now}`);
-  lines.push('');
+  // Calculate stats
+  const totalTasks = tasks.length;
+  const dueToday = tasks.filter(t => t.dueDate && formatDate(t.dueDate) === dateStr).length;
+  const overdue = tasks.filter(t => t.dueDate && formatDate(t.dueDate) < dateStr && !t.completed).length;
+  const projects = [...new Set(tasks.map(t => t.project).filter(Boolean))];
   
-  if (tasks.length === 0) {
-    lines.push('*No tasks found.*');
-    return lines.join('\n');
-  }
-
-  // Stats
-  const flaggedCount = tasks.filter(t => t.flagged).length;
-  const dueToday = tasks.filter(t => t.dueDate && formatDate(t.dueDate) === now).length;
-  const overdue = tasks.filter(t => t.dueDate && formatDate(t.dueDate) < now && !t.completed).length;
-  
-  lines.push(`**${tasks.length} tasks** | 🚩 ${flaggedCount} flagged | 📅 ${dueToday} due today | ⚠️ ${overdue} overdue`);
+  // Metadata
+  lines.push(`> Last Synced: ${dateStr} ${timeStr}`);
+  lines.push(`> ${totalTasks} tasks | ${dueToday} due today | ${overdue} overdue | ${projects.length} projects`);
   lines.push('');
   lines.push('---');
   lines.push('');
-
-  if (groupByProject) {
-    const groups = groupTasksByProject(tasks);
-    const projectNames = Object.keys(groups).sort((a, b) => {
-      // Put "No Project" at the end
+  
+  // Tasks section using Obsidian callout (collapsible)
+  lines.push('> [!todo]- Tasks');
+  
+  if (tasks.length === 0) {
+    lines.push('> *No tasks found.*');
+  } else {
+    // Group tasks by project
+    const grouped = groupTasksByProject(tasks);
+    
+    // Sort project names (No Project last)
+    const projectNames = Object.keys(grouped).sort((a, b) => {
       if (a === 'No Project') return 1;
       if (b === 'No Project') return -1;
       return a.localeCompare(b);
     });
     
     for (const projectName of projectNames) {
-      lines.push(`## ${projectName}`);
-      lines.push('');
+      const projectTasks = grouped[projectName];
       
-      // Sort tasks: flagged first, then by due date
-      const sortedTasks = groups[projectName].sort((a, b) => {
+      // Sort tasks within project: flagged first, then by due date
+      projectTasks.sort((a, b) => {
         if (a.flagged && !b.flagged) return -1;
         if (!a.flagged && b.flagged) return 1;
         if (a.dueDate && !b.dueDate) return -1;
@@ -123,26 +96,47 @@ export function generateMarkdown(tasks, options = {}) {
         return 0;
       });
       
-      for (const task of sortedTasks) {
-        lines.push(taskToMarkdown(task, { includeNotes }));
+      lines.push(`> **${projectName}**`);
+      for (const task of projectTasks) {
+        lines.push(`> ${taskToMarkdown(task)}`);
       }
-      lines.push('');
-    }
-  } else {
-    // Flat list sorted by due date
-    const sortedTasks = [...tasks].sort((a, b) => {
-      if (a.flagged && !b.flagged) return -1;
-      if (!a.flagged && b.flagged) return 1;
-      if (a.dueDate && !b.dueDate) return -1;
-      if (!a.dueDate && b.dueDate) return 1;
-      if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
-      return 0;
-    });
-    
-    for (const task of sortedTasks) {
-      lines.push(taskToMarkdown(task, { includeNotes }));
+      lines.push('>');
     }
   }
+  
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  
+  // Day Planning section
+  lines.push('## Day Planning');
+  lines.push('');
+  lines.push("- **What's top of mind?**");
+  lines.push('');
+  lines.push("- **What's the energy like today?**");
+  lines.push('');
+  lines.push("### Day's Tasks");
+  lines.push('');
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  
+  // Day Notes section
+  lines.push('## Day Notes');
+  lines.push('');
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  
+  // End of Day Review section
+  lines.push('## End of Day Review');
+  lines.push('');
+  lines.push('- **What went well today?**');
+  lines.push('');
+  lines.push('- **What was draining?**');
+  lines.push('');
+  lines.push("- **What's lingering that's still top of mind?**");
+  lines.push('');
 
   return lines.join('\n');
 }
