@@ -109,7 +109,7 @@ export function generateMarkdown(tasks, options = {}) {
   lines.push('```button');
   lines.push('name Add to Day Tasks');
   lines.push('type command');
-  lines.push('action Templater: Insert _templates/Add to Day Tasks');
+  lines.push(`action Templater: Insert ${config.templaterAddToDayTasks}`);
   lines.push('class button-add-to-day');
   lines.push('```');
   lines.push('');
@@ -154,7 +154,7 @@ export function generateMarkdown(tasks, options = {}) {
   lines.push('```button');
   lines.push('name Complete Tasks in OmniFocus');
   lines.push('type command');
-  lines.push('action Templater: Insert _templates/Complete Tasks');
+  lines.push(`action Templater: Insert ${config.templaterCompleteTasks}`);
   lines.push('class button-complete');
   lines.push('```');
   lines.push('');

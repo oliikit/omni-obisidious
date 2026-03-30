@@ -26,4 +26,8 @@ export const config = {
   
   // Date format for due dates
   dateFormat: 'YYYY-MM-DD',
+
+  // configs for Obsidian templates using Templater
+  templaterAddToDayTasks: '_templates/Add to Day Tasks',
+  templaterCompleteTasks: '_templates/Complete Tasks'
 };
