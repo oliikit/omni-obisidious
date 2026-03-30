@@ -1,5 +1,9 @@
 # Omni-Obsidious
 
+TODO - need to specify the day for complete
+TODO - TIME IS WRONG
+TODO - ADD folders
+
 Sync OmniFocus tasks to Obsidian daily notes.
 
 ## Setup
@@ -85,3 +89,5 @@ The "Complete Tasks" button requires a system command:
 ## Recommended Plugins
 
 - **Outliner**: Move list items with `Cmd+Shift+↑/↓`
+# TODO - add to omnifocus section in obsidian
+# TODO - better organization with team label and full project slug

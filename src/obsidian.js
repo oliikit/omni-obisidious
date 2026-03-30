@@ -171,6 +171,50 @@ export function getTodayFilename() {
 }
 
 /**
+ * Get the ISO week number and Monday date for a given date.
+ * Returns { weekNumber, mondayDate } where mondayDate is 'YYYY-MM-DD'.
+ */
+function getWeekInfo(date) {
+  // Copy date to avoid mutation
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  // Set to nearest Thursday (ISO week starts on Monday)
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNumber = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+
+  // Calculate Monday of the current week
+  const monday = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = monday.getUTCDay() || 7; // Sunday = 7
+  monday.setUTCDate(monday.getUTCDate() - (day - 1));
+  const mondayDate = monday.toISOString().split('T')[0];
+
+  return { weekNumber, mondayDate };
+}
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+/**
+ * Get the month folder name for today, e.g. "03 - March"
+ */
+export function getMonthFolder() {
+  const now = new Date();
+  const month = now.getMonth(); // 0-indexed
+  const num = String(month + 1).padStart(2, '0');
+  return `${num} - ${MONTH_NAMES[month]}`;
+}
+
+/**
+ * Get the week folder name for today, e.g. "Week 13: 2026-03-23"
+ */
+export function getWeekFolder() {
+  const { weekNumber, mondayDate } = getWeekInfo(new Date());
+  return `Week ${weekNumber}: ${mondayDate}`;
+}
+
+/**
  * Write markdown content to Obsidian vault
  * If file exists, only appends new tasks to the Tasks callout
  */
@@ -178,6 +222,8 @@ export function writeToObsidian(content, tasks, options = {}) {
   const {
     vault = config.obsidianVault,
     folder = config.tasksFolder,
+    monthFolder = getMonthFolder(),
+    weekFolder = getWeekFolder(),
     filename = getTodayFilename(), // Default to daily note
   } = options;
 
@@ -186,8 +232,8 @@ export function writeToObsidian(content, tasks, options = {}) {
     throw new Error(`Obsidian vault not found at: ${vault}`);
   }
 
-  // Create tasks folder if it doesn't exist
-  const tasksPath = join(vault, folder);
+  // Create month/week subfolder inside tasks folder (e.g. Dailies/03 - March/Week 13: 2026-03-23/)
+  const tasksPath = join(vault, folder, monthFolder, weekFolder);
   if (!existsSync(tasksPath)) {
     mkdirSync(tasksPath, { recursive: true });
     console.log(`Created folder: ${tasksPath}`);
