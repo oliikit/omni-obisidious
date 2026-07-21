@@ -64,7 +64,7 @@ async function setup() {
   console.log('  2. Settings → Templater → Template folder location');
   console.log('     → Set to: _templates');
   console.log('  3. Settings → Templater → User System Command Functions');
-  console.log('     → Add "complete_tasks" command (see README for details)');
+  console.log('     → Add "refresh_tasks" and "complete_tasks" commands (see README for details)');
 }
 
 setup().catch(console.error);

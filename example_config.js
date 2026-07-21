@@ -29,5 +29,6 @@ export const config = {
 
   // configs for Obsidian templates using Templater
   templaterAddToDayTasks: '_templates/Add to Day Tasks',
+  templaterRefreshTasks: '_templates/Refresh Tasks',
   templaterCompleteTasks: '_templates/Complete Tasks'
 };

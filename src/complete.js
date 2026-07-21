@@ -11,7 +11,20 @@ import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
 import { config } from '../config.js';
-import { getTodayFilename } from './obsidian.js';
+import { getTodayFilename, getMonthFolder, getWeekFolder } from './obsidian.js';
+
+/**
+ * Resolve the daily note file path.
+ * If a path is passed as a CLI argument, use it directly.
+ * Otherwise, fall back to computing today's path.
+ */
+function resolveDailyNotePath() {
+  const arg = process.argv[2];
+  if (arg) {
+    return arg;
+  }
+  return join(config.obsidianVault, config.tasksFolder, getMonthFolder(), getWeekFolder(), getTodayFilename());
+}
 
 /**
  * Parse markdown file and extract completed task IDs
@@ -111,9 +124,8 @@ function markTasksComplete(taskIds) {
 async function main() {
   console.log('✅ omni-obsidious - Marking completed tasks in OmniFocus\n');
 
-  // Find today's daily note
-  const filename = getTodayFilename();
-  const filePath = join(config.obsidianVault, config.tasksFolder, filename);
+  // Find the daily note (from CLI arg or computed for today)
+  const filePath = resolveDailyNotePath();
   
   console.log(`📄 Reading: ${filePath}`);
   

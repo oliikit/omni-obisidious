@@ -113,14 +113,21 @@ export function generateMarkdown(tasks, options = {}) {
   lines.push('class button-add-to-day');
   lines.push('```');
   lines.push('');
+  lines.push('```button');
+  lines.push('name Refresh OmniFocus Tasks');
+  lines.push('type command');
+  lines.push(`action Templater: Insert ${config.templaterRefreshTasks}`);
+  lines.push('class button-refresh');
+  lines.push('```');
+  lines.push('');
   lines.push('---');
   
   // Day Planning section
   lines.push('## Day Planning');
   lines.push('');
-  lines.push("- **What's top of mind?**");
+  lines.push("- **Today I am grateful for:**");
   lines.push('');
-  lines.push("- **What's the energy like today?**");
+  lines.push("- **What is today's focus?**");
   lines.push('');
   lines.push("### Day's Tasks");
   lines.push('');
@@ -139,17 +146,23 @@ export function generateMarkdown(tasks, options = {}) {
   // End of Day Review section
   lines.push('## End of Day Review');
   lines.push('');
-  lines.push('- **What went well today?**');
+  lines.push('- **My energy at the end of the work day:**');
+  lines.push('_1 - low energy; 10 - high energy_');
+  lines.push('');
+  lines.push('- **I did the following for myself today to recharge my energy:**');
   lines.push('');
   lines.push('');
-  lines.push('- **What was draining?**');
+  lines.push('- **What thoughts were the most prevalent on my mind today?**');
   lines.push('');
   lines.push('');
-  lines.push("- **What's lingering that's still top of mind?**");
+  lines.push('- **Today\'s Wins:**');
   lines.push('');
   lines.push('');
+  lines.push('- **What I will do better tomorrow:**');
   lines.push('');
-  
+  lines.push('');
+
+
   // Button to complete tasks in OmniFocus
   lines.push('```button');
   lines.push('name Complete Tasks in OmniFocus');

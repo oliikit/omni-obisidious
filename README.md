@@ -1,9 +1,5 @@
 # Omni-Obsidious
 
-TODO - need to specify the day for complete
-TODO - TIME IS WRONG
-TODO - ADD folders
-
 Sync OmniFocus tasks to Obsidian daily notes.
 
 ## Setup
@@ -78,16 +74,42 @@ The "Complete Tasks" button requires a system command:
 4. Replace `~/path/to/omni-obsidious` with your actual path
 5. Reload Obsidian
 
+### Refresh Tasks Setup
+
+The "Refresh OmniFocus Tasks" button requires a system command:
+
+1. Go to Settings → Templater → User System Command Functions
+2. Add new function with Name: `refresh_tasks`
+3. Set Command based on your Node setup:
+
+   **nvm users:**
+   ```
+   source ~/.nvm/nvm.sh && cd ~/path/to/omni-obsidious && npm run sync
+   ```
+
+   **Homebrew users:**
+   ```
+   export PATH=/opt/homebrew/bin:$PATH && cd ~/path/to/omni-obsidious && npm run sync
+   ```
+
+   **Standard Node install:**
+   ```
+   export PATH=/usr/local/bin:$PATH && cd ~/path/to/omni-obsidious && npm run sync
+   ```
+
+4. Replace `~/path/to/omni-obsidious` with your actual path
+5. Reload Obsidian
+
 ## Workflow
 
 1. Run `npm start` to sync OmniFocus tasks to today's daily note
 2. Check tasks you want to work on in the Tasks callout
 3. Click "Add to Day Tasks" button to move them to your day plan
-4. Work through your tasks, checking them off as you complete them
-5. Click "Complete Tasks in OmniFocus" to sync completions back
+4. Click "Refresh OmniFocus Tasks" to pull in newly added OmniFocus tasks without leaving Obsidian
+5. Work through your tasks, checking them off as you complete them
+6. Click "Complete Tasks in OmniFocus" to sync completions back
 
 ## Recommended Plugins
 
 - **Outliner**: Move list items with `Cmd+Shift+↑/↓`
-# TODO - add to omnifocus section in obsidian
-# TODO - better organization with team label and full project slug
+

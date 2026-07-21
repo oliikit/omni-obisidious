@@ -10,13 +10,13 @@
  * 5. Set Command (pick one based on your setup):
  *
  *    For nvm users:
- *    source ~/.nvm/nvm.sh && cd ~/path/to/omni-obsidious && npm run complete
+ *    source ~/.nvm/nvm.sh && cd ~/path/to/omni-obsidious && npm run complete -- "$1"
  *
  *    For Homebrew users:
- *    export PATH=/opt/homebrew/bin:$PATH && cd ~/path/to/omni-obsidious && npm run complete
+ *    export PATH=/opt/homebrew/bin:$PATH && cd ~/path/to/omni-obsidious && npm run complete -- "$1"
  *
  *    For standard Node install:
- *    export PATH=/usr/local/bin:$PATH && cd ~/path/to/omni-obsidious && npm run complete
+ *    export PATH=/usr/local/bin:$PATH && cd ~/path/to/omni-obsidious && npm run complete -- "$1"
  *
  * 6. Replace ~/path/to/omni-obsidious with your actual path
  * 7. Save and reload Obsidian
@@ -24,6 +24,7 @@
  *    and click the + icon (no need to assign a key, this enables the command palette)
  */
 
-const result = await tp.user.complete_tasks();
+const notePath = app.vault.adapter.basePath + '/' + tp.file.path(true);
+const result = await tp.user.complete_tasks(notePath);
 new Notice(result);
 %>
